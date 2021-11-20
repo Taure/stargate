@@ -1,0 +1,23 @@
+%% -*- mode: erlang;erlang-indent-level: 4;indent-tabs-mode: nil -*-
+
+[
+ {kernel, [
+           {logger_level, debug},
+           {logger,
+            [{handler, default, logger_std_h,
+              #{ formatter => {logger_formatter, #{ }}}}]}
+          ]},
+ {nova, [
+         {cowboy_configuration, #{
+                                  port => 8100
+                                 }},
+         {dev_mode, true},
+         {bootstrap_application, stargate}, %% Bootstraps the application
+         %% Plugins is written on form {RequestType, Module, Options, Priority}
+         %% Priority is that the lowest number is executed first
+         {plugins, [
+                    {pre_request, nova_request_plugin, #{parse_bindings => true}}
+                   ]}
+        ]}
+  %% Please change your app.src-file instead if you intend to add app-specific configurations
+].
