@@ -1,11 +1,19 @@
-{"endpoints":[{
-    "endpoint": "/petapi",
-    "method": "GET",
-    "backend": [
-      {
-        "url_pattern": "/v1/pet",
-        "method": "GET",
-        "host": "http://localhost:8080"
-      }
-    ]
-  }]}
+[{"prefix": "",
+  "security": false,
+  "routes": [
+             {
+              "endpoint": "/petapi",
+              "method": "GET",
+              "module": "stargate_main_controller",
+              "function": "index",
+              "backend": [
+                          {
+                          "url_pattern": "/pet",
+                          "method": "GET",
+                          "host": "http://localhost:8080"
+                          }
+                        ]
+             }
+          ]
+  }
+]
