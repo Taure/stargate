@@ -7,7 +7,8 @@
 
 index(#{method := <<"POST">> = Method,
         path := Path,
-        body := Body} = Req) ->
+        body := Body} = Req) when Method =:= <<"POST">> orelse
+                                  Method =:= <<"PUT">> ->
    logger:debug("Path: ~p Method: ~p Body: ~p", [Path, Method, Body]),
    {ok, BackendCalls} = stargate_routes:lookup(Path, Method),
    Data = get_data(BackendCalls),

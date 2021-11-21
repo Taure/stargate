@@ -26,6 +26,45 @@
                           "host": "http://localhost:8080"
                           }
                         ]
+             },
+             {
+              "endpoint": "/petapi/:petid",
+              "method": "GET",
+              "module": "stargate_main_controller",
+              "function": "index",
+              "backend": [
+                          {
+                          "url_pattern": "/pet/:petid",
+                          "method": "POST",
+                          "host": "http://localhost:8080"
+                          }
+                        ]
+             },
+             {
+              "endpoint": "/petapi/:petid",
+              "method": "PUT",
+              "module": "stargate_main_controller",
+              "function": "index",
+              "backend": [
+                          {
+                          "url_pattern": "/pet/:petid",
+                          "method": "POST",
+                          "host": "http://localhost:8080"
+                          }
+                        ]
+             },
+             {
+              "endpoint": "/petapi/:petid",
+              "method": "DELETE",
+              "module": "stargate_main_controller",
+              "function": "index",
+              "backend": [
+                          {
+                          "url_pattern": "/pet/:petid",
+                          "method": "DELETE",
+                          "host": "http://localhost:8080"
+                          }
+                        ]
              }
           ]
   }
