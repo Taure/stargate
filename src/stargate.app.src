@@ -9,8 +9,8 @@
    [
     kernel,
     stdlib,
-    khepri,
-    nova
+    nova,
+    runtime_tools
    ]},
   {env,[]},
   {modules, []},

@@ -1,18 +1,15 @@
--module(stargate_routes).
+-module(stargate_router).
 
--export([start/1,
+-export([routes/1,
          lookup/2]).
 
-start(stargate) ->
-    {ok, _} = khepri:start(),
+routes(_) ->
     PrivDir = code:priv_dir(stargate),
     {ok, FileBin} = file:read_file(PrivDir ++ "/routes/endpoints.json"),
     Routes = json:decode(FileBin, [maps]),
     GenRoutes = generate_routes(Routes),
     logger:debug("GenRoutes: ~p", [GenRoutes]),
-    {ok, GenRoutes};
-start(nova) ->
-    {ok, []}.
+    GenRoutes.
 
 generate_routes([]) ->
     [];
@@ -41,9 +38,9 @@ insert_routes([#{<<"endpoint">> := Endpoint,
     Key = binary_to_list(<<Endpoint/binary, ".", Method/binary>>),
     AtomModule = binary_to_atom(Module),
     AtomFunction = binary_to_atom(Function),
-    ok = khepri:insert(Key, Backend),
+    ok = persistent_term:put(Key, Backend),
     [{Path, {AtomModule, AtomFunction}, #{methods => [AtomMethod]}}] ++ insert_routes(T).
 
 lookup(Path, Method) ->
     Key = binary_to_list(<<Path/binary, ".", Method/binary>>),
-    khepri:get(Key).
+    persistent_term:get(Key).

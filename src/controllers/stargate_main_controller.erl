@@ -3,8 +3,6 @@
          index/1
         ]).
 
--include_lib("nova/include/nova.hrl").
-
 index(#{method := <<"POST">> = Method,
         path := Path,
         body := Body} = Req) ->

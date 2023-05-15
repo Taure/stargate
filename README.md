@@ -1,6 +1,6 @@
 # stargate
 
-This is a small PoC for a gateway API using Khepri as a database.
+This is a small PoC for a gateway API using persistent term as a database.
 
 in .priv/routes we have a json file that specify incomming routes and outgoing routes.
 
