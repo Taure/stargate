@@ -1,10 +1,10 @@
 -module(stargate_router).
 
--export([routes/1,
+-export([create_routes/1,
          lookup/2]).
 
-routes(_) ->
-    PrivDir = code:priv_dir(stargate),
+create_routes(App) ->
+    PrivDir = code:priv_dir(App),
     {ok, FileBin} = file:read_file(PrivDir ++ "/routes/endpoints.json"),
     Routes = json:decode(FileBin, [maps]),
     GenRoutes = generate_routes(Routes),

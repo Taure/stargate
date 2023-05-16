@@ -7,47 +7,38 @@ index(#{method := <<"POST">> = Method,
         path := Path,
         body := Body} = Req) ->
    logger:debug("Path: ~p Method: ~p Body: ~p", [Path, Method, Body]),
-   {ok, BackendCalls} = stargate_routes:lookup(Path, Method),
-   Data = get_data(BackendCalls),
-   Responses = do_body_request(Data, Req, Body),
+   BackendCalls = stargate_router:lookup(Path, Method),
+   Responses = do_request(BackendCalls, Req, Body, []),
    {json, 200, #{}, Responses};
 index(#{method := Method,
         path := Path} = Req) ->
-    {ok, BackendCalls} = stargate_routes:lookup(Path, Method),
-    Data = get_data(BackendCalls),
-    Responses = do_request(Data, Req),
-    {json, 200, #{}, Responses}.
+    BackendCalls = stargate_router:lookup(Path, Method),
+    Responses = do_request(BackendCalls, Req, undefined, []),
+    ResponseBody = parse_response(Responses),
+    {status, 200, #{}, ResponseBody}.
 
-do_request([], _) ->
-   [];
+do_request([], _, _, Response) ->
+   Response;
 do_request([#{<<"url_pattern">> := Url,
               <<"method">> := Method,
-              <<"host">> := Host} | T], Req) ->
+              <<"host">> := Host} | T], Req, Body, Response) ->
    AtomMethod = to_function(Method),
-   #{body := Response} = shttpc:AtomMethod([Host, "/", Url], opts()),
-   [json:decode(Response, [maps])] ++ do_request(T, Req).
+   RequestResponse = case Body of
+                          undefined -> shttpc:AtomMethod([Host, Url], opts(Method));
+                          Body -> shttpc:AtomMethod([Host, Url], Body, opts(Method))
+                     end,
+   do_request(T, Req, Body, [RequestResponse|Response]).
 
-do_body_request([], _, _) ->
-   [];
-do_body_request([#{<<"url_pattern">> := Url,
-              <<"method">> := Method,
-              <<"host">> := Host} | T], Req, Body) ->
-   AtomMethod = to_function(Method),
-   #{body := Response} = shttpc:AtomMethod([Host, "/", Url], Body, opts()),
-   [json:decode(Response, [maps])] ++ do_body_request(T, Req, Body).
+parse_response([#{body := Body}]) ->
+   Body.
 
-
-opts() ->
-   opts(undefined).
-opts(undefined) ->
+opts(<<"GET">>) ->
+   #{headers => #{}, close => true};
+opts(_) ->
    #{headers => #{'Content-Type' => <<"application/json">>}, close => true}.
+
 
 to_function(<<"GET">>) -> get;
 to_function(<<"POST">>) -> post;
 to_function(<<"PUT">>) -> put;
 to_function(<<"DELETE">>) -> delete.
-
-get_data(BackendCalls) ->
-   [Key] = maps:keys(BackendCalls),
-    #{data := Data} = maps:get(Key, BackendCalls, []),
-    Data.
