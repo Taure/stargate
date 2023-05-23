@@ -3,14 +3,11 @@
  [{description, "stargate managed by Nova"},
   {vsn, "0.1.0"},
   {registered, []},
-  {mod, { stargate_app, []}},
   {included_applications, []},
   {applications,
    [
     kernel,
-    stdlib,
-    nova,
-    runtime_tools
+    stdlib
    ]},
   {env,[]},
   {modules, []},
